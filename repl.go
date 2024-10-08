@@ -20,6 +20,11 @@ func startRepl(cfg *config) {
 		}
 		commandName := c[0]
 
+		args := []string{}
+		if len(c) > 1 {
+			args = c[1:]
+		}
+
 		availableCommands := getCommands()
 
 		command, ok := availableCommands[commandName]
@@ -28,7 +33,7 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		err := command.callback(cfg)
+		err := command.callback(cfg, args...)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -42,11 +47,6 @@ func getCommands() map[string]cliCommand {
 			description: "Show available commands",
 			callback:    callbackHelp,
 		},
-		"exit": {
-			name:        "exit",
-			description: "Closes the Poke-CLI",
-			callback:    callbackExit,
-		},
 		"map": {
 			name:        "map",
 			description: "List all locations in the pokeworld",
@@ -54,8 +54,23 @@ func getCommands() map[string]cliCommand {
 		},
 		"mapb": {
 			name:        "mapb",
-			description: "List previos page of locations in the pokeworld",
+			description: "List previous page of locations in the pokeworld",
 			callback:    callbackMapb,
+		},
+		"explore": {
+			name:        "explore {location_area}",
+			description: "List the pokemons that appears on a specific area",
+			callback:    callbackExplore,
+		},
+		"catch": {
+			name:        "catch {pokemon_name}",
+			description: "Catch a pokemon and add it to your pokedex!",
+			callback:    callbackCatch,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Closes the Poke-CLI",
+			callback:    callbackExit,
 		},
 	}
 }
@@ -63,7 +78,7 @@ func getCommands() map[string]cliCommand {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 func cleanInput(s string) []string {
