@@ -1,15 +1,16 @@
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"os"
-)
+import "github.com/ByChanderZap/poke-cli/internal/pokeapi"
+
+type config struct {
+	pokeApiClient           pokeapi.Client
+	nextLocationAreaUrl     *string
+	previousLocationAreaUrl *string
+}
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("Poke-CLI > ")
-	scanner.Scan()
-	data := scanner.Text()
-	fmt.Println(data)
+	cfg := config{
+		pokeApiClient: pokeapi.NewClient(),
+	}
+	startRepl(&cfg)
 }
